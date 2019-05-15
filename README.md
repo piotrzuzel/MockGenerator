@@ -1,4 +1,4 @@
 # MockGenerator
 
 ## Requirements:
-- Sourcery: https://github.com/krzysztofzablocki/Sourcery
+- Sourcery: https://github.com/krzysztofzablocki/Sourcery (installed with homebrew)
