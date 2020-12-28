@@ -22,10 +22,10 @@ import AppKit
 
 {% macro methodReceivedParameters method %}
     {%if method.parameters.count == 1 %}
-        {% call swiftifyMethodName method.selectorName %}ReceivedInvocations.append({% for param in method.parameters %}{{ param.name }}){% endfor %}
+        {% call swiftifyMethodName method.selectorName %}Calls.append({% for param in method.parameters %}{{ param.name }}){% endfor %}
     {% else %}
     {% if not method.parameters.count == 0 %}
-        {% call swiftifyMethodName method.selectorName %}ReceivedInvocations.append(({% for param in method.parameters %}{{ param.name }}: {{ param.name }}{% if not forloop.last%}, {% endif %}{% endfor %}))
+        {% call swiftifyMethodName method.selectorName %}Calls.append(({% for param in method.parameters %}{{ param.name }}: {{ param.name }}{% if not forloop.last%}, {% endif %}{% endfor %}))
     {% endif %}
     {% endif %}
 {% endmacro %}
@@ -51,13 +51,13 @@ import AppKit
     var {% call swiftifyMethodName method.selectorName %}CallsCount = 0
     var {% call swiftifyMethodName method.selectorName %}Called: Bool { {% call swiftifyMethodName method.selectorName %}CallsCount > 0 }
     {% else %}
-    var {% call swiftifyMethodName method.selectorName %}Called: Bool { !{% call swiftifyMethodName method.selectorName %}ReceivedInvocations.isEmpty }
+    var {% call swiftifyMethodName method.selectorName %}Called: Bool { !{% call swiftifyMethodName method.selectorName %}Calls.isEmpty }
     {% endif %}
     {% endif %}
     {% if method.parameters.count == 1 %}
-    var {% call swiftifyMethodName method.selectorName %}ReceivedInvocations{% for param in method.parameters %}: [{{ '(' if param.isClosure }}{{ param.typeName.unwrappedTypeName }}{{ ')' if param.isClosure }}{%if param.typeName.isOptional%}?{%endif%}]{% endfor %} = []
+    var {% call swiftifyMethodName method.selectorName %}Calls{% for param in method.parameters %}: [{{ '(' if param.isClosure }}{{ param.typeName.unwrappedTypeName }}{{ ')' if param.isClosure }}{%if param.typeName.isOptional%}?{%endif%}]{% endfor %} = []
     {% elif not method.parameters.count == 0 %}
-    var {% call swiftifyMethodName method.selectorName %}ReceivedInvocations: [({% for param in method.parameters %}{{ param.name }}: {{ param.unwrappedTypeName if param.typeAttributes.escaping else param.typeName }}{{ ', ' if not forloop.last }}{% endfor %})] = []
+    var {% call swiftifyMethodName method.selectorName %}Calls: [({% for param in method.parameters %}{{ param.name }}: {{ param.unwrappedTypeName if param.typeAttributes.escaping else param.typeName }}{{ ', ' if not forloop.last }}{% endfor %})] = []
     {% endif %}
     {% if not method.returnTypeName.isVoid and not method.isInitializer %}
     var {% call swiftifyMethodName method.selectorName %}ReturnValue: {{ '(' if method.returnTypeName.isClosure and not method.isOptionalReturnType }}{{ method.returnTypeName }}{{ ')' if method.returnTypeName.isClosure and not method.isOptionalReturnType }}{{ '!' if not method.isOptionalReturnType }}
@@ -109,7 +109,7 @@ import AppKit
 
 {% for type in types.protocols where type.based.AutoMockable or type|annotated:"AutoMockable" %}{% if type.name != "AutoMockable" %}
 
-final class Mock{{ type.name }}: {{ type.name }} {
+class Mock{{ type.name }}: {{ type.name }} {
 {% for variable in type.allVariables|!definedInExtension %}
     {% if variable.isOptional %}{% call mockOptionalVariable variable %}{% elif variable.isArray or variable.isDictionary %}{% call mockNonOptionalArrayOrDictionaryVariable variable %}{% else %}{% call mockNonOptionalVariable variable %}{% endif %}
 {% endfor %}
