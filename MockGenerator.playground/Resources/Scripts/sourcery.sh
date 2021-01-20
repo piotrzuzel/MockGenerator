@@ -2,9 +2,12 @@
 
 sourcesLocation=$1
 templatesLocation=$2
-outputLocation=`mktemp -d`
-generatedFile="$outputLocation/AutoMockable.generated.swift"
+tempLocation=`mktemp -d`
+generatedFile="$tempLocation/AutoMockable.generated.swift"
 
-/usr/local/bin/sourcery --sources $sourcesLocation --templates $templatesLocation --output $outputLocation
+cp -r $sourcesLocation $tempLocation
+find $tempLocation -type f ! -name "*.*" -exec mv {} {}.swift \;
+
+/usr/local/bin/sourcery --sources $tempLocation --templates $templatesLocation --output $tempLocation
 
 open $generatedFile
