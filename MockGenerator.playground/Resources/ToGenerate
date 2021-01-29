@@ -1,0 +1,4 @@
+// sourcery:AutoMockable
+protocol SampleProtocol {
+    func someMethod(param: String, completion: @escaping (Result<String, Error>) -> Void)
+}

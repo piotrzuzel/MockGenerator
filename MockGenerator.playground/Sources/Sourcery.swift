@@ -12,7 +12,7 @@ public class Sourcery {
     private let stencilDirectoryURL: URL
     
     public init() {
-        guard let resourcesURL = Bundle.main.url(forResource: sourcesFilename, withExtension: "swift")?.deletingLastPathComponent() else {
+        guard let resourcesURL = Bundle.main.url(forResource: sourcesFilename, withExtension: nil)?.deletingLastPathComponent() else {
             fatalError("\(sourcesFilename) file not found in main bundle.")
         }
         self.resourcesURL = resourcesURL
